@@ -2,45 +2,45 @@ const { expect, } = require('chai');
 const fixtures = require('./starWars.fixture');
 
 // Create a clean instance of ilorm :
-const Ilorm = require('ilorm').constructor;
-const ilormKnex = require('..');
-const knex = require('knex')({
-  client: 'mysql2',
-  connection: {
-    host : '127.0.0.1',
-    user : 'root',
-    password : 'root',
-    database : 'test',
-    multipleStatements: true
-  }
-});
-knex.on('query', function( queryData ) {
-  console.log(queryData.sql, queryData.bindings);
-});
+const ilorm = require('ilorm');
+const ilormMongo = require('..');
+const { MongoClient, } = require('mongodb');
 
-const knexConnection = ilormKnex.fromKnex(knex);
+ilorm.use(ilormMongo);
 
-const ilorm = new Ilorm();
-
-ilorm.use(ilormKnex);
 const { Schema, newModel, } = ilorm;
+const DB_URL = 'mongodb://localhost:27017/ilorm';
+
+let database;
+let Characters;
+
+async function initModel() {
+  const mongoClient = await MongoClient.connect(DB_URL, { useUnifiedTopology: true, },);
+  database = await mongoClient.db('ilorm',);
+
+  const MongoConnector = ilormMongo.fromDb(database);
+
 
 // Declare schema :
-const charSchema = fixtures.charactersSchema(Schema);
+  const charSchema = fixtures.charactersSchema(Schema);
 
-const modelConfig = {
-  name: 'characters', // Optional, could be useful to know the model name
-  schema: charSchema,
-  connector: new knexConnection({ tableName: 'characters' }),
-};
+  const modelConfig = {
+    name: 'characters', // Optional, could be useful to know the model name
+    schema: charSchema,
+    connector: new MongoConnector({ collectionName: 'characters', }),
+  };
 
-const Characters = newModel(modelConfig);
+  Characters = newModel(modelConfig);
+}
 
 describe('spec ilorm knex', () => {
   describe('Should query data from database', () => {
-    before(async () => await fixtures.initDb(knex));
+    before(async () => {
+      await initModel();
+      await fixtures.initDb(database,);
+    });
 
-    after(async () => await fixtures.cleanDb(knex));
+    after(async () => await fixtures.cleanDb(database,),);
 
     it('Should query data, based on criteria', async () => {
       const results = await Characters.query()
@@ -57,10 +57,13 @@ describe('spec ilorm knex', () => {
 
     it('Should count data, based on criteria', async () => {
       const results = await Characters.query()
-        .height.between({ min: 200, max: 300 })
+        .height.between({
+          min: 200,
+          max: 300,
+        },)
         .count();
 
-      expect(results).to.be.deep.equal(2);
+      expect(results).to.be.deep.equal(2,);
     });
 
     it('Should retrieve on instance, based on criteria', async () => {

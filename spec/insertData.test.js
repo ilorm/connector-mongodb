@@ -1,66 +1,61 @@
 const { expect, } = require('chai');
 
 // Create a clean instance of ilorm :
-const Ilorm = require('ilorm').constructor;
-const ilormKnex = require('..');
-const knex = require('knex')({
-  client: 'mysql2',
-  connection: {
-    host : '127.0.0.1',
-    user : 'root',
-    password : 'root',
-    database : 'test',
-    multipleStatements: true
-  }
-});
+const ilorm = require('ilorm');
+const ilormMongo = require('..');
+const { MongoClient, } = require('mongodb');
 
-const knexConnection = ilormKnex.fromKnex(knex);
+ilorm.use(ilormMongo);
 
-const ilorm = new Ilorm();
-
-ilorm.use(ilormKnex);
 const { Schema, newModel, } = ilorm;
+const DB_URL = 'mongodb://localhost:27017/ilorm';
 
-// Declare schema :
-const userSchema = new Schema({
-  firstName: Schema.string(),
-  lastName: Schema.string()
-});
+let database;
+let User;
 
-const modelConfig = {
-  name: 'users', // Optional, could be useful to know the model name
-  schema: userSchema,
-  connector: new knexConnection({ tableName: 'users' }),
-};
+async function initModel() {
+  const mongoClient = await MongoClient.connect(DB_URL, { useUnifiedTopology: true, },);
+  database = await mongoClient.db('ilorm',);
 
-const User = newModel(modelConfig);
+  const MongoConnector = ilormMongo.fromDb(database);
 
-describe('spec ilorm knex', () => {
-  describe('Should insert data into database', () => {
-    before(async () => {
-      await knex.schema.createTable('users', (table) => {
-        table.string('firstName');
-        table.string('lastName');
-      });
-    });
-
-    after(async () => {
-      await knex.schema.dropTable('users');
-
-      await knex.destroy();
-    });
-
-    it('Should insert data with model saving', async () => {
-      const user = new User();
-      user.firstName = 'Smith';
-      user.lastName = 'Bond';
-
-      await user.save();
-
-      const results = await knex.table('users').first('firstName', 'lastName');
-
-      expect(results.firstName).to.be.equal('Smith');
-      expect(results.lastName).to.be.equal('Bond');
-    });
+  // Declare schema;
+  const userSchema = new Schema({
+    firstName: Schema.string(),
+    lastName: Schema.string(),
   });
-});
+
+  const modelConfig = {
+    name: 'users',
+    schema: userSchema,
+    connector: new MongoConnector({ collectionName: 'users', },),
+  };
+
+  User = newModel(modelConfig);
+}
+
+
+describe('Should insert data into database', () => {
+  before(async () => {
+    await initModel();
+
+    await database.createCollection('users',);
+  },);
+
+  after(async () => {
+  },);
+
+  it('Should insert data with model saving', async () => {
+    const user = new User();
+
+    user.firstName = 'Smith';
+    user.lastName = 'Bond';
+
+    await user.save();
+
+    const result = await database.collection('users',).findOne({ firstName: 'Smith', },);
+
+    expect(result.firstName,).to.be.equal('Smith',);
+    expect(result.lastName,).to.be.equal('Bond',);
+  },);
+},);
