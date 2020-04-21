@@ -23,6 +23,7 @@ const initDb = async (database) => {
       name: 'Darth Vador',
       gender: 'M',
       height: 203,
+      weapons: [ 'lightsaber', ],
     },
     {
       _id: new ObjectID('5e9f6106330f06ee7f76cbe8'),
@@ -30,6 +31,7 @@ const initDb = async (database) => {
       name: 'Luck Skywalker',
       gender: 'M',
       height: 172,
+      weapons: [ 'lightsaber', 'blaster', ],
     },
     {
       _id: new ObjectID('5e9f6111330f06ee7f76cbea'),
@@ -37,6 +39,7 @@ const initDb = async (database) => {
       name: 'Chewbacca',
       gender: 'M',
       height: 230,
+      weapons: [ 'bowcaster', ],
     },
     {
       _id: new ObjectID('5e9f6123330f06ee7f76cbec'),
@@ -44,6 +47,7 @@ const initDb = async (database) => {
       name: 'Leia Organa',
       gender: 'F',
       height: 150,
+      weapons: [ 'blaster', ],
     },
   ]);
 };
@@ -68,6 +72,7 @@ const charactersSchema = (Schema) => new Schema({
   raceId: Schema.string(),
   height: Schema.number(),
   gender: Schema.string(),
+  weapons: Schema.array(Schema.string()),
 });
 
 module.exports = {
