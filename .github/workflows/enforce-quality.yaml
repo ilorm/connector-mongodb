@@ -13,4 +13,7 @@ jobs:
         with:
           mongodb-version: 4.2
       - run: npm install
-      - run: npm test
+      - name: 'Lint'
+        run: npm run eslint
+      - name: 'Test'
+        run: npm test
