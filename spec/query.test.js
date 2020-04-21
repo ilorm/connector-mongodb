@@ -14,18 +14,20 @@ const DB_URL = 'mongodb://localhost:27017/ilorm';
 let database;
 let Characters;
 
+// eslint-disable-next-line require-jsdoc
 async function initModel() {
-  const mongoClient = await MongoClient.connect(DB_URL, { useUnifiedTopology: true, },);
-  database = await mongoClient.db('ilorm',);
+  const mongoClient = await MongoClient.connect(DB_URL, { useUnifiedTopology: true, });
+
+  database = await mongoClient.db('ilorm');
 
   const MongoConnector = ilormMongo.fromDb(database);
 
 
-// Declare schema :
+  // Declare schema :
   const charSchema = fixtures.charactersSchema(Schema);
 
   const modelConfig = {
-    name: 'characters', // Optional, could be useful to know the model name
+    name: 'characters',
     schema: charSchema,
     connector: new MongoConnector({ collectionName: 'characters', }),
   };
@@ -37,10 +39,10 @@ describe('spec ilorm knex', () => {
   describe('Should query data from database', () => {
     before(async () => {
       await initModel();
-      await fixtures.initDb(database,);
+      await fixtures.initDb(database);
     });
 
-    after(async () => await fixtures.cleanDb(database,),);
+    after(() => fixtures.cleanDb(database));
 
     it('Should query data, based on criteria', async () => {
       const results = await Characters.query()
@@ -60,10 +62,11 @@ describe('spec ilorm knex', () => {
         .height.between({
           min: 200,
           max: 300,
-        },)
+        })
         .count();
 
-      expect(results).to.be.deep.equal(2,);
+      // eslint-disable-next-line no-magic-numbers
+      expect(results).to.be.deep.equal(2);
     });
 
     it('Should retrieve on instance, based on criteria', async () => {

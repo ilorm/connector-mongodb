@@ -1,5 +1,6 @@
 
-const initDb = async database => {
+// eslint-disable-next-line require-jsdoc
+const initDb = async (database) => {
   await database.createCollection('race');
   await database.createCollection('characters');
 
@@ -11,7 +12,7 @@ const initDb = async database => {
     {
       id: '08fb0d7c-499b-40fe-9074-5edc1b091e0a',
       name: 'wookie',
-    }
+    },
   ]);
 
   await database.collection('characters').insertMany([
@@ -42,29 +43,31 @@ const initDb = async database => {
       name: 'Leia Organa',
       gender: 'F',
       height: 150,
-    }
+    },
   ]);
 };
 
-const cleanDb = async knex => {
+// eslint-disable-next-line require-jsdoc
+const cleanDb = async (database) => {
+  await database.dropCollection('race');
+  await database.dropCollection('characters');
+
 };
 
-raceSchema = Schema => {
-  return new Schema({
-    id: Schema.string(),
-    name: Schema.string(),
-  });
-};
+// eslint-disable-next-line require-jsdoc
+const raceSchema = (Schema) => new Schema({
+  id: Schema.string(),
+  name: Schema.string(),
+});
 
-charactersSchema = Schema => {
-  return new Schema({
-    id: Schema.string(),
-    name: Schema.string(),
-    raceId: Schema.string(),
-    height: Schema.number(),
-    gender: Schema.string(),
-  });
-};
+// eslint-disable-next-line require-jsdoc
+const charactersSchema = (Schema) => new Schema({
+  id: Schema.string(),
+  name: Schema.string(),
+  raceId: Schema.string(),
+  height: Schema.number(),
+  gender: Schema.string(),
+});
 
 module.exports = {
   initDb,

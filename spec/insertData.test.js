@@ -13,9 +13,11 @@ const DB_URL = 'mongodb://localhost:27017/ilorm';
 let database;
 let User;
 
+// eslint-disable-next-line require-jsdoc
 async function initModel() {
-  const mongoClient = await MongoClient.connect(DB_URL, { useUnifiedTopology: true, },);
-  database = await mongoClient.db('ilorm',);
+  const mongoClient = await MongoClient.connect(DB_URL, { useUnifiedTopology: true, });
+
+  database = await mongoClient.db('ilorm');
 
   const MongoConnector = ilormMongo.fromDb(database);
 
@@ -28,7 +30,7 @@ async function initModel() {
   const modelConfig = {
     name: 'users',
     schema: userSchema,
-    connector: new MongoConnector({ collectionName: 'users', },),
+    connector: new MongoConnector({ collectionName: 'users', }),
   };
 
   User = newModel(modelConfig);
@@ -39,11 +41,12 @@ describe('Should insert data into database', () => {
   before(async () => {
     await initModel();
 
-    await database.createCollection('users',);
-  },);
+    await database.createCollection('users');
+  });
 
   after(async () => {
-  },);
+    await database.dropCollection('users');
+  });
 
   it('Should insert data with model saving', async () => {
     const user = new User();
@@ -53,9 +56,9 @@ describe('Should insert data into database', () => {
 
     await user.save();
 
-    const result = await database.collection('users',).findOne({ firstName: 'Smith', },);
+    const result = await database.collection('users').findOne({ firstName: 'Smith', });
 
-    expect(result.firstName,).to.be.equal('Smith',);
-    expect(result.lastName,).to.be.equal('Bond',);
-  },);
-},);
+    expect(result.firstName).to.be.equal('Smith');
+    expect(result.lastName).to.be.equal('Bond');
+  });
+});
