@@ -1,3 +1,4 @@
+const { ObjectID, } = require('mongodb');
 
 // eslint-disable-next-line require-jsdoc
 const initDb = async (database) => {
@@ -6,40 +7,40 @@ const initDb = async (database) => {
 
   await database.collection('race').insertMany([
     {
-      id: 'd4f9e1f5-555a-4d3a-9cb0-2a16f22ff50b',
+      _id: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
       name: 'human',
     },
     {
-      id: '08fb0d7c-499b-40fe-9074-5edc1b091e0a',
+      _id: new ObjectID('5e9f60f7330f06ee7f76cbe5'),
       name: 'wookie',
     },
   ]);
 
   await database.collection('characters').insertMany([
     {
-      id: '8eb82c15-4f26-4945-b568-83905b610ba9',
-      raceId: 'd4f9e1f5-555a-4d3a-9cb0-2a16f22ff50b',
+      _id: new ObjectID('5e9f6101330f06ee7f76cbe7'),
+      raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
       name: 'Darth Vador',
       gender: 'M',
       height: 203,
     },
     {
-      id: '034d29fc-9dd2-417c-9c5e-8b17011ee0e1',
-      raceId: 'd4f9e1f5-555a-4d3a-9cb0-2a16f22ff50b',
+      _id: new ObjectID('5e9f6106330f06ee7f76cbe8'),
+      raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
       name: 'Luck Skywalker',
       gender: 'M',
       height: 172,
     },
     {
-      id: '28adf8e6-7508-40ea-977a-55e08302a352',
-      raceId: '08fb0d7c-499b-40fe-9074-5edc1b091e0a',
+      _id: new ObjectID('5e9f6111330f06ee7f76cbea'),
+      raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
       name: 'Chewbacca',
       gender: 'M',
       height: 230,
     },
     {
-      id: '73eb1c35-a7ca-4ad9-bcd7-a6f037f58471',
-      raceId: 'd4f9e1f5-555a-4d3a-9cb0-2a16f22ff50b',
+      _id: new ObjectID('5e9f6123330f06ee7f76cbec'),
+      raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
       name: 'Leia Organa',
       gender: 'F',
       height: 150,
