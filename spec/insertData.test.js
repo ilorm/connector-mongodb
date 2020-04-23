@@ -1,25 +1,20 @@
+const { getDatabase, getMongoConnector, } = require('./helper');
 const { expect, } = require('chai');
 
 // Create a clean instance of ilorm :
 const ilorm = require('ilorm');
-const ilormMongo = require('..');
-const { MongoClient, } = require('mongodb');
-
-ilorm.use(ilormMongo);
 
 const { Schema, newModel, } = ilorm;
-const DB_URL = 'mongodb://localhost:27017/ilorm';
 
 let database;
 let User;
 
 // eslint-disable-next-line require-jsdoc
 async function initModel() {
-  const mongoClient = await MongoClient.connect(DB_URL, { useUnifiedTopology: true, });
 
-  database = await mongoClient.db('ilorm');
+  database = await getDatabase();
 
-  const MongoConnector = ilormMongo.fromDb(database);
+  const MongoConnector = await getMongoConnector();
 
   // Declare schema;
   const userSchema = new Schema({
