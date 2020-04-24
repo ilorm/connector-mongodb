@@ -45,7 +45,7 @@ async function expectInsert(instance) {
   expect(result).to.deep.include(instance);
 }
 
-describe('ArraySchemaField', () => {
+describe('ArrayField', () => {
   describe('With no constraint in the array content', () => {
     afterEach(purgeTest);
 
