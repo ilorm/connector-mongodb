@@ -28,7 +28,7 @@ const initDb = async (database) => {
     {
       _id: new ObjectID('5e9f6106330f06ee7f76cbe8'),
       raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      name: 'Luck Skywalker',
+      name: 'Luke Skywalker',
       gender: 'M',
       height: 172,
       weapons: [ 'lightsaber', 'blaster', ],

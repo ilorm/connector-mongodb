@@ -1,4 +1,4 @@
-const { getDatabase, getMongoConnector, } = require('./helper');
+const { getDatabase, getMongoConnector, } = require('./databaseHelpers');
 const { expect, } = require('chai');
 
 // Create a clean instance of ilorm :

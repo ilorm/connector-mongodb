@@ -1,4 +1,4 @@
-const { getDatabase, getMongoConnector, } = require('./helper');
+const { getDatabase, getMongoConnector, } = require('./databaseHelpers');
 const { expect, } = require('chai');
 const fixtures = require('./starWars.fixture');
 
@@ -46,7 +46,7 @@ describe('spec ilorm knex', () => {
 
       expect(results).to.be.deep.equal([
         'Darth Vador',
-        'Luck Skywalker',
+        'Luke Skywalker',
         'Chewbacca',
       ]);
     });
