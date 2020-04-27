@@ -1,5 +1,5 @@
-const { getDatabase, getMongoConnector, } = require('./helper');
-const { Schema, newModel, } = require('ilorm');
+const { getDatabase, getMongoConnector, } = require('./databaseHelpers');
+const { Schema, newModel, BaseModel, } = require('ilorm');
 const { expect, } = require('chai');
 
 /**
@@ -47,13 +47,19 @@ async function expectInsert(instance) {
 
 describe('ArrayField', () => {
   describe('With no constraint in the array content', () => {
-    afterEach(purgeTest);
+    after(purgeTest);
 
-    it('Should insert data into database', async () => {
-      const Model = await initModel({
+    let Model;
+
+    it('Should init the model', async () => {
+      Model = await initModel({
         test: Schema.array(),
       });
 
+      expect(Model.prototype).to.be.an.instanceOf(BaseModel);
+    });
+
+    it('Should insert data into database', async () => {
       const modelInstance = new Model();
 
       modelInstance.test = [
@@ -74,13 +80,19 @@ describe('ArrayField', () => {
     });
   });
   describe('With string as array constraint', () => {
-    afterEach(purgeTest);
+    after(purgeTest);
 
-    it('Should insert data into database', async () => {
-      const Traveler = await initModel({
+    let Traveler;
+
+    it('Should init the model', async () => {
+      Traveler = await initModel({
         visitedCities: Schema.array(Schema.string()),
       });
 
+      expect(Traveler.prototype).to.be.an.instanceOf(BaseModel);
+    });
+
+    it('Should insert data into database', async () => {
       const josh = new Traveler();
 
       josh.visitedCities = [
@@ -101,16 +113,22 @@ describe('ArrayField', () => {
     });
   });
   describe('With object as array constraint', () => {
-    afterEach(purgeTest);
+    after(purgeTest);
 
-    it('Should insert data into database', async () => {
-      const Person = await initModel({
+    let Person;
+
+    it('Should init the model', async () => {
+      Person = await initModel({
         siblings: Schema.array(Schema.object({
           isSister: Schema.boolean(),
           firstName: Schema.string(),
         })),
       });
 
+      expect(Person.prototype).to.be.an.instanceOf(BaseModel);
+    });
+
+    it('Should insert data into database', async () => {
       const josh = new Person();
 
       josh.siblings = [
@@ -127,6 +145,31 @@ describe('ArrayField', () => {
       await josh.save();
 
       await expectInsert({
+        siblings: [
+          {
+            isSister: true,
+            firstName: 'Pauline',
+          },
+          {
+            isSister: false,
+            firstName: 'Jim',
+          },
+        ],
+      });
+    });
+
+    it('Should query model based on an element of an array', async () => {
+      const found = await Person.query()
+        .siblings.include((subQuery) => subQuery.firstName.is('Jim'))
+        .findOne();
+
+      const notFound = await Person.query()
+        .siblings.include((subQuery) => subQuery.firstName.is('Benjamin'))
+        .findOne();
+
+      // eslint-disable-next-line no-unused-expressions
+      expect(notFound).to.be.null;
+      expect(found).to.deep.include({
         siblings: [
           {
             isSister: true,
