@@ -1,5 +1,30 @@
 const { ObjectID, } = require('mongodb');
 
+const DARTH_VADOR = {
+  name: 'Darth Vador',
+  gender: 'M',
+  height: 203,
+  weapons: [ 'lightsaber', ],
+};
+const LUKE = {
+  name: 'Luke Skywalker',
+  gender: 'M',
+  height: 172,
+  weapons: [ 'lightsaber', 'blaster', ],
+};
+const CHEWBACCA = {
+  name: 'Chewbacca',
+  gender: 'M',
+  height: 230,
+  weapons: [ 'bowcaster', ],
+};
+const LEIA = {
+  name: 'Leia Organa',
+  gender: 'F',
+  height: 150,
+  weapons: [ 'blaster', ],
+};
+
 // eslint-disable-next-line require-jsdoc
 const initDb = async (database) => {
   await database.createCollection('race');
@@ -20,34 +45,22 @@ const initDb = async (database) => {
     {
       _id: new ObjectID('5e9f6101330f06ee7f76cbe7'),
       raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      name: 'Darth Vador',
-      gender: 'M',
-      height: 203,
-      weapons: [ 'lightsaber', ],
+      ...DARTH_VADOR,
     },
     {
       _id: new ObjectID('5e9f6106330f06ee7f76cbe8'),
       raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      name: 'Luke Skywalker',
-      gender: 'M',
-      height: 172,
-      weapons: [ 'lightsaber', 'blaster', ],
+      ...LUKE,
     },
     {
       _id: new ObjectID('5e9f6111330f06ee7f76cbea'),
       raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      name: 'Chewbacca',
-      gender: 'M',
-      height: 230,
-      weapons: [ 'bowcaster', ],
+      ...CHEWBACCA,
     },
     {
       _id: new ObjectID('5e9f6123330f06ee7f76cbec'),
       raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      name: 'Leia Organa',
-      gender: 'F',
-      height: 150,
-      weapons: [ 'blaster', ],
+      ...LEIA,
     },
   ]);
 };
@@ -80,4 +93,8 @@ module.exports = {
   cleanDb,
   raceSchema,
   charactersSchema,
+  LUKE,
+  CHEWBACCA,
+  DARTH_VADOR,
+  LEIA,
 };
