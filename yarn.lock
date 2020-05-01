@@ -847,10 +847,10 @@ ilorm-constants@^0.5.0:
   resolved "https://registry.yarnpkg.com/ilorm-constants/-/ilorm-constants-0.5.0.tgz#7b93f38bd0a431748db023cd6bd4d2f0c335e9ca"
   integrity sha512-ZSuYOOF6Q/p3qhl/rNDmAB7tZ2fdm/ZlO77NjwrEzgHYhF70qHmgXE1BbsL8+QNV+CBlm1C0Qg1Oq/jzMRwkQw==
 
-ilorm@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/ilorm/-/ilorm-0.8.0.tgz#7f2d823fddb32e19712ff9984f81b46edadbcd49"
-  integrity sha512-ZB3ud97MKaEYWyWhpkVxgZSE+MYW57ECqzh49qgc912nVC2HQG9ifGbB0YkDGnPyMlpJKRlEaOWOGs3UC6fL0A==
+ilorm@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/ilorm/-/ilorm-0.9.0.tgz#504a29eb3998a333d504142649d4649274fa3111"
+  integrity sha512-0QSRKkW7NX5Y9w/QeXlxjA93orBz/pSYLZaQ3WOIT7le0pucL/pQvwd9zHqoQ1pfAdHAmeD2X86DyvWQWuXjYw==
   dependencies:
     ilorm-constants "^0.5.0"
 

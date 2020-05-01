@@ -25,11 +25,12 @@ describe('query.skip', () => {
   it('Should skip to next element', async () => {
     const Characters = await getCharactersModel();
 
+    const LIMIT = 2;
 
     // eslint-disable-next-line require-jsdoc
     const skipQuery = (skipIndex = 0) => Characters.query()
       .skip(skipIndex)
-      .limit(2)
+      .limit(LIMIT)
       .find();
 
     const [ elem0, elem1, ] = await skipQuery(0);

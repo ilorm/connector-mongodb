@@ -14,9 +14,9 @@ async function initModel(schemaDefinition) {
   const schema = new Schema(schemaDefinition);
 
   const modelConfig = {
-    name: 'ModelArray',
+    name: 'ModelObject',
     schema,
-    connector: new MongoConnector({ collectionName: 'modelArray', }),
+    connector: new MongoConnector({ collectionName: 'modelObject', }),
   };
 
   return newModel(modelConfig);
@@ -27,7 +27,7 @@ async function initModel(schemaDefinition) {
  * @returns {Promise<void>} Return nothing
  */
 async function purgeTest() {
-  await (await getDatabase()).dropCollection('modelArray');
+  await (await getDatabase()).dropCollection('modelObject');
 }
 
 /**
@@ -37,7 +37,7 @@ async function purgeTest() {
  */
 async function expectInsert(instance) {
   const database = await getDatabase();
-  const [ collection, ] = (await database.collections('modelArray'));
+  const [ collection, ] = (await database.collections('modelObject'));
 
   const result = await collection
     .findOne({});
@@ -45,7 +45,7 @@ async function expectInsert(instance) {
   expect(result).to.deep.include(instance);
 }
 
-describe('ArrayField', () => {
+describe('ObjectField', () => {
   describe('With no constraint in the array content', () => {
     after(purgeTest);
 
@@ -53,7 +53,7 @@ describe('ArrayField', () => {
 
     it('Should init the model', async () => {
       Model = await initModel({
-        test: Schema.array(),
+        test: Schema.object(),
       });
 
       expect(Model.prototype).to.be.an.instanceOf(BaseModel);
@@ -62,67 +62,38 @@ describe('ArrayField', () => {
     it('Should insert data into database', async () => {
       const modelInstance = new Model();
 
-      modelInstance.test = [
-        1,
-        'test',
-        { test: 'maVar', },
-      ];
+      modelInstance.test = {
+        number: 3,
+        string: 'test',
+        subObject: {
+          test: 'maVar',
+        },
+      };
 
       await modelInstance.save();
 
       await expectInsert({
-        test: [
-          1,
-          'test',
-          { test: 'maVar', },
-        ],
+        test: {
+          number: 3,
+          string: 'test',
+          subObject: {
+            test: 'maVar',
+          },
+        },
       });
     });
   });
-  describe('With string as array constraint', () => {
-    after(purgeTest);
-
-    let Traveler;
-
-    it('Should init the model', async () => {
-      Traveler = await initModel({
-        visitedCities: Schema.array(Schema.string()),
-      });
-
-      expect(Traveler.prototype).to.be.an.instanceOf(BaseModel);
-    });
-
-    it('Should insert data into database', async () => {
-      const josh = new Traveler();
-
-      josh.visitedCities = [
-        'Paris',
-        'London',
-        'Moscow',
-      ];
-
-      await josh.save();
-
-      await expectInsert({
-        visitedCities: [
-          'Paris',
-          'London',
-          'Moscow',
-        ],
-      });
-    });
-  });
-  describe('With object as array constraint', () => {
+  describe('With constraint', () => {
     after(purgeTest);
 
     let Person;
 
     it('Should init the model', async () => {
       Person = await initModel({
-        siblings: Schema.array(Schema.object({
-          isSister: Schema.boolean(),
+        information: Schema.object({
           firstName: Schema.string(),
-        })),
+          lastName: Schema.string(),
+        }),
       });
 
       expect(Person.prototype).to.be.an.instanceOf(BaseModel);
@@ -131,55 +102,66 @@ describe('ArrayField', () => {
     it('Should insert data into database', async () => {
       const josh = new Person();
 
-      josh.siblings = [
-        {
-          isSister: true,
-          firstName: 'Pauline',
-        },
-        {
-          isSister: false,
-          firstName: 'Jim',
-        },
-      ];
+      josh.information = {
+        firstName: 'Josh',
+        lastName: 'Smith',
+      };
 
       await josh.save();
 
       await expectInsert({
-        siblings: [
-          {
-            isSister: true,
-            firstName: 'Pauline',
-          },
-          {
-            isSister: false,
-            firstName: 'Jim',
-          },
-        ],
+        information: {
+          firstName: 'Josh',
+          lastName: 'Smith',
+        },
       });
     });
 
-    it('Should query model based on an element of an array', async () => {
+    it('Should query model based on an object field', async () => {
       const found = await Person.query()
-        .siblings.firstName.is('Jim')
+        .information.firstName.is('Josh')
         .findOne();
 
       const notFound = await Person.query()
-        .siblings.firstName.is('Benjamin')
+        .information.firstName.is('Benjamin')
         .findOne();
 
       // eslint-disable-next-line no-unused-expressions
       expect(notFound).to.be.null;
       expect(found).to.deep.include({
-        siblings: [
-          {
-            isSister: true,
-            firstName: 'Pauline',
-          },
-          {
-            isSister: false,
-            firstName: 'Jim',
-          },
-        ],
+        information: {
+          firstName: 'Josh',
+          lastName: 'Smith',
+        },
+      });
+
+      it('Should query model based on the full object', async () => {
+        const found = await Person.query()
+          .information
+          .is({
+            firstName: 'Josh',
+            lastName: 'Smith',
+          })
+          .findOne();
+
+        const notFound = await Person.query()
+          .information
+          .is({
+            firstName: 'Josh',
+          })
+          .findOne();
+
+        // eslint-disable-next-line no-unused-expressions
+        expect(notFound).to.be.null;
+        expect(found)
+          .to
+          .deep
+          .include({
+            information: {
+              firstName: 'Josh',
+              lastName: 'Smith',
+            },
+          });
       });
     });
   });
