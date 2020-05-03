@@ -99,6 +99,15 @@ describe('ObjectField', () => {
       expect(Person.prototype).to.be.an.instanceOf(BaseModel);
     });
 
+    it('Should cast embedded field', () => {
+      const android = new Person();
+
+      android.information.firstName = 33;
+      android.information.lastName = 'android';
+
+      expect(android.information.firstName).to.be.equal('33');
+    });
+
     it('Should insert data into database', async () => {
       const josh = new Person();
 
