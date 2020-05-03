@@ -90,6 +90,7 @@ describe('ObjectField', () => {
 
     it('Should init the model', async () => {
       Person = await initModel({
+        _id: Schema.string().primary(),
         information: Schema.object({
           firstName: Schema.string(),
           lastName: Schema.string(),
@@ -128,49 +129,75 @@ describe('ObjectField', () => {
 
     it('Should query model based on an object field', async () => {
       const found = await Person.query()
-        .information.firstName.is('Josh')
+        .information
+        .firstName
+        .is('Josh')
         .findOne();
 
       const notFound = await Person.query()
-        .information.firstName.is('Benjamin')
+        .information
+        .firstName
+        .is('Benjamin')
         .findOne();
 
       // eslint-disable-next-line no-unused-expressions
       expect(notFound).to.be.null;
-      expect(found).to.deep.include({
-        information: {
-          firstName: 'Josh',
-          lastName: 'Smith',
-        },
-      });
-
-      it('Should query model based on the full object', async () => {
-        const found = await Person.query()
-          .information
-          .is({
+      expect(found)
+        .to
+        .deep
+        .include({
+          information: {
             firstName: 'Josh',
             lastName: 'Smith',
-          })
-          .findOne();
+          },
+        });
+    });
 
-        const notFound = await Person.query()
-          .information
-          .is({
+    it('Should query model based on the full object', async () => {
+      const found = await Person.query()
+        .information
+        .is({
+          firstName: 'Josh',
+          lastName: 'Smith',
+        })
+        .findOne();
+
+      const notFound = await Person.query()
+        .information
+        .is({
+          firstName: 'Josh',
+        })
+        .findOne();
+
+      // eslint-disable-next-line no-unused-expressions
+      expect(notFound).to.be.null;
+      expect(found)
+        .to
+        .deep
+        .include({
+          information: {
             firstName: 'Josh',
-          })
-          .findOne();
+            lastName: 'Smith',
+          },
+        });
+    });
 
-        // eslint-disable-next-line no-unused-expressions
-        expect(notFound).to.be.null;
-        expect(found)
-          .to
-          .deep
-          .include({
-            information: {
-              firstName: 'Josh',
-              lastName: 'Smith',
-            },
-          });
+    it('Should update embedded field', async () => {
+      const josh = await Person.query()
+        .information
+        .firstName
+        .is('Josh')
+        .findOne();
+
+      josh.information.lastName = 'Josh Jr';
+
+      await josh.save();
+
+      await expectInsert({
+        information: {
+          firstName: 'Josh Jr',
+          lastName: 'Smith',
+        },
       });
     });
   });
