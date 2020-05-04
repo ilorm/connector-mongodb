@@ -189,7 +189,7 @@ describe('ObjectField', () => {
         .is('Josh')
         .findOne();
 
-      josh.information.lastName = 'Josh Jr';
+      josh.information.firstName = 'Josh Jr';
 
       await josh.save();
 
