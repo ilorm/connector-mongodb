@@ -1,13 +1,15 @@
 
-const { initDb, cleanDb, getCharactersModel, } = require('./helpers');
+const TestContext = require('../helpers');
 const { expect, } = require('chai');
 
+const testContext = new TestContext();
+
 describe('query.[FIELD].useAsSortAsc', () => {
-  beforeEach(initDb);
-  afterEach(cleanDb);
+  beforeEach(() => testContext.initDb());
+  afterEach(() => testContext.cleanDb());
 
   it('Should sort characters by height ascending', async () => {
-    const Characters = await getCharactersModel();
+    const Characters = await testContext.getCharactersModel();
 
     const charactersNameSortByHeight = await Characters.query()
       .name.selectOnly()
@@ -24,11 +26,11 @@ describe('query.[FIELD].useAsSortAsc', () => {
 });
 
 describe('query.[FIELD].useAsSortDesc', () => {
-  beforeEach(initDb);
-  afterEach(cleanDb);
+  beforeEach(() => testContext.initDb());
+  afterEach(() => testContext.cleanDb());
 
   it('Should sort characters by height descending', async () => {
-    const Characters = await getCharactersModel();
+    const Characters = await testContext.getCharactersModel();
 
     const charactersNameSortByHeight = await Characters.query()
       .name.selectOnly()

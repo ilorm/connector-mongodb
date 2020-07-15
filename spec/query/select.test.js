@@ -1,13 +1,15 @@
 
-const { initDb, cleanDb, getCharactersModel, } = require('./helpers');
+const TestContext = require('../helpers');
 const { expect, } = require('chai');
 
+const testContext = new TestContext();
+
 describe('query.[FIELD].select', () => {
-  beforeEach(initDb);
-  afterEach(cleanDb);
+  beforeEach(() => testContext.initDb());
+  afterEach(() => testContext.cleanDb());
 
   it('Should select only one field from query', async () => {
-    const Characters = await getCharactersModel();
+    const Characters = await testContext.getCharactersModel();
 
     const char = await Characters.query()
       .name.select()
@@ -19,7 +21,7 @@ describe('query.[FIELD].select', () => {
   });
 
   it('Should select two one fields from query', async () => {
-    const Characters = await getCharactersModel();
+    const Characters = await testContext.getCharactersModel();
 
     const char = await Characters.query()
       .name.select()
@@ -34,11 +36,11 @@ describe('query.[FIELD].select', () => {
 });
 
 describe('query.[FIELD].selectOnly', () => {
-  beforeEach(initDb);
-  afterEach(cleanDb);
+  beforeEach(() => testContext.initDb());
+  afterEach(() => testContext.cleanDb());
 
   it('Should selectOnly one field from query', async () => {
-    const Characters = await getCharactersModel();
+    const Characters = await testContext.getCharactersModel();
 
     const name = await Characters.query()
       .name.selectOnly()
@@ -49,7 +51,7 @@ describe('query.[FIELD].selectOnly', () => {
   });
 
   it('Should throw an error if trying to selectOnly multiple fields', async () => {
-    const Characters = await getCharactersModel();
+    const Characters = await testContext.getCharactersModel();
 
     // eslint-disable-next-line require-jsdoc
     const queryFactory = () => Characters.query()
