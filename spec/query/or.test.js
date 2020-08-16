@@ -11,7 +11,7 @@ describe('query.or', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should create query with or operator', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const names = await Characters.query()
       .name.selectOnly()

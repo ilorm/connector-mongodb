@@ -9,7 +9,7 @@ describe('query.[FIELD].useAsSortAsc', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should sort characters by height ascending', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const charactersNameSortByHeight = await Characters.query()
       .name.selectOnly()
@@ -30,7 +30,7 @@ describe('query.[FIELD].useAsSortDesc', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should sort characters by height descending', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const charactersNameSortByHeight = await Characters.query()
       .name.selectOnly()

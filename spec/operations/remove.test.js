@@ -11,7 +11,7 @@ describe('query.remove', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should remove all elements', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const amountRemoved = await Characters.query()
       .remove();
@@ -26,7 +26,7 @@ describe('query.remove', () => {
   });
 
   it('Should remove a subset of element if filter is set', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const amountRemoved = await Characters.query()
       .name.is(CHEWBACCA.name)
@@ -54,7 +54,7 @@ describe('query.removeOne', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should remove one elements without filter', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const amountRemoved = await Characters.query()
       .removeOne();
@@ -69,7 +69,7 @@ describe('query.removeOne', () => {
   });
 
   it('Should remove one element if filter is set', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const amountRemoved = await Characters.query()
       .name.is(CHEWBACCA.name)
@@ -92,7 +92,7 @@ describe('query.removeOne', () => {
 
   it('Should remove nothing if filter target an unknow value', async () => {
 
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const amountRemoved = await Characters.query()
       .name.is('a non star wars character')

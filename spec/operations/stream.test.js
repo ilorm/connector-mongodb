@@ -11,7 +11,7 @@ describe('query.stream', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should stream all elements', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const nameStream = await Characters.query()
       .name.selectOnly()
@@ -37,7 +37,7 @@ describe('query.stream', () => {
   });
 
   it('Should stream a subset of elements', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const nameStream = await Characters.query()
       .name.selectOnly()

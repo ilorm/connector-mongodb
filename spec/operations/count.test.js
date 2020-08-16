@@ -11,7 +11,7 @@ describe('query.count', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should count all element without filters', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const amount = await Characters.query()
       .count();
@@ -21,7 +21,7 @@ describe('query.count', () => {
   });
 
   it('Should count a subset of element if filter is set', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const amount = await Characters.query()
       .name.is(CHEWBACCA.name)

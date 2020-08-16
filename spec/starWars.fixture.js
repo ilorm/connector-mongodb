@@ -91,6 +91,9 @@ const charactersSchema = (Schema) => new Schema({
 module.exports = {
   initDb,
   cleanDb,
+  modelName: 'characters',
+  collectionName: 'characters',
+  schema: charactersSchema,
   raceSchema,
   charactersSchema,
   LUKE,

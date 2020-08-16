@@ -9,7 +9,7 @@ describe('query.[FIELD].select', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should select only one field from query', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const char = await Characters.query()
       .name.select()
@@ -21,7 +21,7 @@ describe('query.[FIELD].select', () => {
   });
 
   it('Should select two one fields from query', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const char = await Characters.query()
       .name.select()
@@ -40,7 +40,7 @@ describe('query.[FIELD].selectOnly', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should selectOnly one field from query', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const name = await Characters.query()
       .name.selectOnly()
@@ -51,7 +51,7 @@ describe('query.[FIELD].selectOnly', () => {
   });
 
   it('Should throw an error if trying to selectOnly multiple fields', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     // eslint-disable-next-line require-jsdoc
     const queryFactory = () => Characters.query()

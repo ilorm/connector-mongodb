@@ -12,7 +12,7 @@ describe('query[NumberField]', () => {
     afterEach(() => testContext.cleanDb());
 
     it('Should query with operator is', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const character = await Characters.query()
         .height.is(CHEWBACCA.height)
@@ -22,7 +22,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should query with operator isNot', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const characters = await Characters.query()
         .height.isNot(CHEWBACCA.height)
@@ -37,7 +37,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should query with operator isIn', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const characters = await Characters.query()
         .height.isIn([
@@ -54,7 +54,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should query with operator isNotIn', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const characters = await Characters.query()
         .height.isNotIn([
@@ -71,7 +71,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should query with operator greaterThan', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const characters = await Characters.query()
         .height.greaterThan(DARTH_VADOR.height)
@@ -84,7 +84,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should query with operator greaterOrEqualThan', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const characters = await Characters.query()
         .height.greaterOrEqualThan(DARTH_VADOR.height)
@@ -99,7 +99,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should query with operator lowerThan', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const characters = await Characters.query()
         .height.lowerThan(LUKE.height)
@@ -112,7 +112,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should query with operator lowerOrEqualThan', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const characters = await Characters.query()
         .height.lowerOrEqualThan(LUKE.height)
@@ -126,7 +126,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should query with operator between', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       const characters = await Characters.query()
         .height.between({
@@ -148,7 +148,7 @@ describe('query[NumberField]', () => {
     afterEach(() => testContext.cleanDb());
 
     it('Should update with operator set', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       await Characters.query()
         // eslint-disable-next-line no-magic-numbers
@@ -165,7 +165,7 @@ describe('query[NumberField]', () => {
     });
 
     it('Should update with operator add', async () => {
-      const Characters = await testContext.getCharactersModel();
+      const Characters = await testContext.getModel();
 
       await Characters.query()
         // eslint-disable-next-line no-magic-numbers

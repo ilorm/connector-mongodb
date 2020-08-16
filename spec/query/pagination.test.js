@@ -9,7 +9,7 @@ describe('query.limit', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should limit to one element', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const characters = await Characters.query()
       .limit(1)
@@ -25,7 +25,7 @@ describe('query.skip', () => {
   afterEach(() => testContext.cleanDb());
 
   it('Should skip to next element', async () => {
-    const Characters = await testContext.getCharactersModel();
+    const Characters = await testContext.getModel();
 
     const LIMIT = 2;
 

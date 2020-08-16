@@ -1,6 +1,6 @@
 const { MongoClient, } = require('mongodb');
 
-const fixtures = require('./starWars.fixture');
+const starWarsFixtures = require('./starWars.fixture');
 
 const Ilorm = require('ilorm').constructor;
 const ilormMongo = require('../index');
@@ -12,13 +12,14 @@ const DB_URL = 'mongodb://localhost:27017/ilorm';
  */
 class TestContext {
   // eslint-disable-next-line require-jsdoc
-  constructor() {
+  constructor(fixtures = null) {
     this.ilorm = new Ilorm();
     this.ilorm.use(ilormMongo);
+    this.fixtures = fixtures || starWarsFixtures;
   }
 
   // eslint-disable-next-line require-jsdoc
-  getCharactersModel() {
+  getModel() {
     return this.Model;
   }
 
@@ -27,12 +28,12 @@ class TestContext {
     const MongoConnector = ilormMongo.fromDb(this.database);
 
     // Declare schema :
-    const charSchema = fixtures.charactersSchema(this.ilorm.Schema);
+    const schema = this.fixtures.schema(this.ilorm.Schema);
 
     const modelConfig = {
-      name: 'characters',
-      schema: charSchema,
-      connector: new MongoConnector({ collectionName: 'characters', }),
+      name: this.fixtures.modelName,
+      schema,
+      connector: new MongoConnector({ collectionName: this.fixtures.collectionName, }),
     };
 
     this.Model = this.ilorm.newModel(modelConfig);
@@ -46,12 +47,12 @@ class TestContext {
 
     this.initModel();
 
-    return fixtures.initDb(this.database);
+    return this.fixtures.initDb(this.database);
   }
 
   // eslint-disable-next-line
   async cleanDb() {
-    await fixtures.cleanDb(this.database);
+    await this.fixtures.cleanDb(this.database);
 
     return this.mongoClient.close();
   }
