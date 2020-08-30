@@ -134,4 +134,56 @@ describe('query[MapField]', () => {
       }).to.throw('Invalid key for the map mapConstraint (received abcd).');
     });
   });
+
+  describe('MapField including MapField', () => {
+    const fixturesMapOfMap = {
+      modelName: 'mapOfMap',
+      collectionName: 'mapOfMap',
+      schema: (Schema) => new Schema({
+        mapConstraint: Schema.map(Schema.map(Schema.number())),
+      }),
+      initDb: async (database) => {
+        await database.createCollection('mapOfMap');
+        await database.collection('mapOfMap').insertMany([
+          {
+            _id: new ObjectID('6e9f60bd330f06ee7f76cbe3'),
+            mapConstraint: {
+              guillaume: {
+                daix: 30,
+              },
+            },
+          },
+          {
+            _id: new ObjectID('533f60bd330f06ee7f76cbe3'),
+            mapConstraint: {
+              ferdinand: {
+                rasumz: 30,
+                verdel: 22,
+              },
+            },
+          },
+        ]);
+      },
+      cleanDb: (database) => database.dropCollection('mapOfMap'),
+    };
+
+    const testContextMapOfMap = new TestContext(fixturesMapOfMap);
+
+    beforeEach(() => testContextMapOfMap.initDb());
+    afterEach(() => testContextMapOfMap.cleanDb());
+
+    it('Should query map of map', async () => {
+      const MapModel = await testContextMapOfMap.getModel();
+
+      const result = await MapModel.query()
+        .mapConstraint
+        .ferdinand
+        // eslint-disable-next-line no-magic-numbers
+        .rasumz.is(30)
+        .findOne();
+
+      // eslint-disable-next-line no-magic-numbers
+      expect(result.mapConstraint.ferdinand.rasumz).to.be.equal(30);
+    });
+  });
 });
