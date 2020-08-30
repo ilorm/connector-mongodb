@@ -135,6 +135,33 @@ describe('query[MapField]', () => {
     });
   });
 
+  describe('isValid', () => {
+    const ilorm = new Ilorm();
+
+    ilorm.use(ilormMongo);
+
+    const mapField = ilorm.Schema.map(ilorm.Schema.number())
+      // eslint-disable-next-line no-magic-numbers
+      .setKeyValidator((key) => key.length === 2);
+
+    it('Set a non object as a map is invalid.', async () => {
+      expect(await mapField.isValid(null)).to.be.equal(false);
+    });
+
+    it('Set a non valid key is invalid.', async () => {
+      expect(await mapField.isValid({ keyLengthIsNotTwo: 3, })).to.be.equal(false);
+    });
+
+    it('Set a non valid value associated with the key is invalid.', async () => {
+
+      expect(await mapField.isValid({ ab: 'not a number', })).to.be.equal(false);
+    });
+
+    it('A valid map is an object with valid key and a valid value.', async () => {
+      expect(await mapField.isValid({ va: 3, })).to.be.equal(true);
+    });
+  });
+
   describe('MapField including MapField', () => {
     const fixturesMapOfMap = {
       modelName: 'mapOfMap',
