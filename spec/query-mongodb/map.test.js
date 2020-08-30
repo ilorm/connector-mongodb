@@ -4,7 +4,15 @@ const TestContext = require('../helpers');
 const { expect, } = require('chai');
 
 const ELEM_1 = {
-  map: {
+  mapConstraint: {
+    ab: {
+      testString: 'notString',
+    },
+  },
+};
+
+const ELEM_2 = {
+  mapConstraint: {
     ab: {
       testString: 'string',
       testNumber: 33,
@@ -33,6 +41,10 @@ const fixtures = {
         _id: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
         ...ELEM_1,
       },
+      {
+        _id: new ObjectID('5eaf60bd330f06ee7f76cbe4'),
+        ...ELEM_2,
+      },
     ]);
   },
   cleanDb: (database) => database.dropCollection('map'),
@@ -48,13 +60,13 @@ describe('query[MapField]', () => {
     const MapModel = await testContext.getModel();
 
     const result = await MapModel.query()
-      .map
+      .mapConstraint
       .ab
       // eslint-disable-next-line no-magic-numbers
       .testNumber.is(33)
       .findOne();
 
 
-    expect(result).to.deep.include(ELEM_1);
+    expect(result).to.deep.include(ELEM_2);
   });
 });
