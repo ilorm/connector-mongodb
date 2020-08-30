@@ -1,5 +1,7 @@
 const { ObjectID, } = require('mongodb');
 const TestContext = require('../helpers');
+const Ilorm = require('ilorm').constructor;
+const ilormMongo = require('../../index');
 
 const { expect, } = require('chai');
 
@@ -68,5 +70,68 @@ describe('query[MapField]', () => {
 
 
     expect(result).to.deep.include(ELEM_2);
+  });
+
+  describe('Schema declaration', () => {
+    it('Internal Schema for map need to be a field', () => {
+      expect(() => {
+        const ilorm = new Ilorm();
+
+        ilorm.use(ilormMongo);
+
+        ilorm.Schema.map(null);
+      }).to.throw('internalSchema need to be a Field');
+
+    });
+  });
+
+  describe('castValue', () => {
+    it('Set a map to undefined or null should re-init at empty map', async () => {
+      const MapModel = await testContext.getModel();
+
+      const test = new MapModel();
+
+      test.mapConstraint = null;
+
+      expect(test).to.deep.include({
+        mapConstraint: {},
+      });
+
+      test.mapConstraint = undefined;
+
+      expect(test).to.deep.include({
+        mapConstraint: {},
+      });
+    });
+
+    it('Should be an object', async () => {
+      const MapModel = await testContext.getModel();
+
+      const test = new MapModel();
+
+      expect(() => {
+        test.mapConstraint = 3;
+
+      }).to.throw('mapConstraint is expected to be an object (received 3).');
+    });
+
+    it('Key should respect the keyValidation (key.length === 2)', async () => {
+      const MapModel = await testContext.getModel();
+      const test = new MapModel();
+
+      test.mapConstraint = {};
+
+      expect(() => {
+        test.mapConstraint.abc = {};
+
+      }).to.throw('Invalid key for the map mapConstraint (received abc).');
+
+      expect(() => {
+        test.mapConstraint = {
+          abcd: {},
+        };
+
+      }).to.throw('Invalid key for the map mapConstraint (received abcd).');
+    });
   });
 });
