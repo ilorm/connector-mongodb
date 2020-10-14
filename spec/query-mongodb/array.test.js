@@ -26,18 +26,32 @@ const ELEM_2 = {
   ],
 };
 
-const fixtures = {
-  modelName: 'array',
-  collectionName: 'array',
-  schema: (Schema) => new Schema({
-    arrayConstraint: Schema.array(Schema.object({
-      testString: Schema.string(),
-      testNumber: Schema.number(),
-      // eslint-disable-next-line no-magic-numbers
-    })),
-    arrayWithoutConstraint: Schema.array(),
-  }),
-  initDb: async (database) => {
+
+// eslint-disable-next-line require-jsdoc
+class ArrayFixture {
+  // eslint-disable-next-line require-jsdoc
+  constructor(database, MongoConnector) {
+    this.database = database;
+    this.MongoConnector = MongoConnector;
+    this.collectionName = 'array';
+  }
+
+  // eslint-disable-next-line require-jsdoc
+  schema(Schema) {
+    return new Schema({
+      arrayConstraint: Schema.array(Schema.object({
+        testString: Schema.string(),
+        testNumber: Schema.number(),
+        // eslint-disable-next-line no-magic-numbers
+      })),
+      arrayWithoutConstraint: Schema.array(),
+    });
+  }
+
+  // eslint-disable-next-line require-jsdoc
+  async initDb() {
+    const database = await this.database;
+
     await database.createCollection('array');
     await database.collection('array').insertMany([
       {
@@ -49,14 +63,23 @@ const fixtures = {
         ...ELEM_2,
       },
     ]);
-  },
-  cleanDb: (database) => database.dropCollection('array'),
-};
+  }
+  // eslint-disable-next-line require-jsdoc
+  async cleanDb() {
+    const database = await this.database;
 
-const testContext = new TestContext(fixtures);
+    return database.dropCollection('array');
+  }
+}
+
+let testContext;
 
 describe('query[ArrayField]', () => {
-  beforeEach(() => testContext.initDb());
+  beforeEach(() => {
+    testContext = new TestContext(ArrayFixture);
+
+    return testContext.initDb();
+  });
   afterEach(() => testContext.cleanDb());
 
   it('Should query model based on an array field', async () => {

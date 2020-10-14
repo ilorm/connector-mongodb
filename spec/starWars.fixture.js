@@ -1,103 +1,122 @@
 const { ObjectID, } = require('mongodb');
-
-const DARTH_VADOR = {
-  name: 'Darth Vador',
-  gender: 'M',
-  height: 203,
-  weapons: [ 'lightsaber', ],
-};
-const LUKE = {
-  name: 'Luke Skywalker',
-  gender: 'M',
-  height: 172,
-  weapons: [ 'lightsaber', 'blaster', ],
-};
-const CHEWBACCA = {
-  name: 'Chewbacca',
-  gender: 'M',
-  height: 230,
-  weapons: [ 'bowcaster', ],
-};
-const LEIA = {
-  name: 'Leia Organa',
-  gender: 'F',
-  height: 150,
-  weapons: [ 'blaster', ],
-};
+const StarWarsFixtures = require('ilorm/spec/common/starWars.fixtures');
 
 // eslint-disable-next-line require-jsdoc
-const initDb = async (database) => {
-  await database.createCollection('race');
-  await database.createCollection('characters');
+class MongoStarWarsFixtures extends StarWarsFixtures {
+  // eslint-disable-next-line require-jsdoc
+  constructor(database, MongoConnector) {
+    super({
+      idGenerator: ObjectID,
+      idFieldName: '_id',
+    });
 
-  await database.collection('race').insertMany([
-    {
-      _id: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      name: 'human',
-    },
-    {
-      _id: new ObjectID('5e9f60f7330f06ee7f76cbe5'),
-      name: 'wookie',
-    },
-  ]);
+    this.database = database;
+    this.MongoConnector = MongoConnector;
+  }
 
-  await database.collection('characters').insertMany([
-    {
-      _id: new ObjectID('5e9f6101330f06ee7f76cbe7'),
-      raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      ...DARTH_VADOR,
-    },
-    {
-      _id: new ObjectID('5e9f6106330f06ee7f76cbe8'),
-      raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      ...LUKE,
-    },
-    {
-      _id: new ObjectID('5e9f6111330f06ee7f76cbea'),
-      raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      ...CHEWBACCA,
-    },
-    {
-      _id: new ObjectID('5e9f6123330f06ee7f76cbec'),
-      raceId: new ObjectID('5e9f60bd330f06ee7f76cbe3'),
-      ...LEIA,
-    },
-  ]);
-};
+  // eslint-disable-next-line require-jsdoc
+  getCharactersSchema(ilorm) {
+    const { Schema, } = ilorm;
 
-// eslint-disable-next-line require-jsdoc
-const cleanDb = async (database) => {
-  await database.dropCollection('race');
-  await database.dropCollection('characters');
+    return {
+      ...super.getCharactersSchema(ilorm),
+      weapons: Schema.array(Schema.string()),
+    };
+  }
 
-};
+  // eslint-disable-next-line require-jsdoc
+  getRacesConnector() {
+    return new this.MongoConnector({
+      sourceName: 'races',
+    });
+  }
 
-// eslint-disable-next-line require-jsdoc
-const raceSchema = (Schema) => new Schema({
-  id: Schema.string(),
-  name: Schema.string(),
-});
+  // eslint-disable-next-line require-jsdoc
+  getCharactersConnector() {
+    return new this.MongoConnector({
+      sourceName: 'characters',
+    });
+  }
 
-// eslint-disable-next-line require-jsdoc
-const charactersSchema = (Schema) => new Schema({
-  id: Schema.string(),
-  name: Schema.string(),
-  raceId: Schema.string(),
-  height: Schema.number(),
-  gender: Schema.string(),
-  weapons: Schema.array(Schema.string()),
-});
+  // eslint-disable-next-line require-jsdoc
+  getCharactersFixture() {
+    const Characters = super.getCharactersFixture();
 
-module.exports = {
-  initDb,
-  cleanDb,
-  modelName: 'characters',
-  collectionName: 'characters',
-  schema: charactersSchema,
-  raceSchema,
-  charactersSchema,
-  LUKE,
-  CHEWBACCA,
-  DARTH_VADOR,
-  LEIA,
-};
+    Characters.DARTH_VADOR = {
+      ...Characters.DARTH_VADOR,
+      weapons: [ 'lightsaber', ],
+    };
+    Characters.LUKE = {
+      ...Characters.LUKE,
+      weapons: [ 'lightsaber', 'blaster', ],
+    };
+    Characters.CHEWBACCA = {
+      ...Characters.CHEWBACCA,
+      weapons: [ 'bowcaster', ],
+    };
+    Characters.LEIA = {
+      ...Characters.LEIA,
+      weapons: [ 'blaster', ],
+    };
+
+    return Characters;
+  }
+
+  // eslint-disable-next-line require-jsdoc
+  async initDb() {
+    const db = await this.database;
+
+    await db.createCollection('race');
+    await db.createCollection('characters');
+    const Races = this.getRacesFixture();
+    const Characters = this.getCharactersFixture();
+
+    await new Promise((resolve, reject) => {
+      db.collection('races', async (err, customerCollection) => {
+        if (err) {
+          reject(err);
+
+          return;
+        }
+        await customerCollection.insertMany(Object.keys(Races).map((name) => Races[name]));
+
+        resolve();
+      });
+    });
+    await new Promise((resolve, reject) => {
+      db.collection('characters', async (err, invoiceCollection) => {
+        if (err) {
+          reject(err);
+
+          return;
+        }
+        await invoiceCollection.insertMany(Object.keys(Characters).map((name) => Characters[name]));
+
+        resolve();
+      });
+    });
+
+  }
+
+  // eslint-disable-next-line require-jsdoc
+  async cleanDb() {
+    const db = await this.database;
+
+    try {
+
+      await db.dropCollection('race');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+    try {
+      await db.dropCollection('characters');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  }
+}
+
+module.exports = MongoStarWarsFixtures;
+

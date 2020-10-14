@@ -1,6 +1,6 @@
 const { MongoClient, } = require('mongodb');
 
-const starWarsFixtures = require('./starWars.fixture');
+const StarWarsFixtures = require('./starWars.fixture');
 
 const Ilorm = require('ilorm').constructor;
 const ilormMongo = require('../index');
@@ -12,10 +12,16 @@ const DB_URL = 'mongodb://localhost:27017/ilorm';
  */
 class TestContext {
   // eslint-disable-next-line require-jsdoc
-  constructor(fixtures = null) {
+  constructor(Fixtures = StarWarsFixtures) {
     this.ilorm = new Ilorm();
+
+    this.MongoConnector = ilormMongo.init({
+      url: DB_URL,
+      name: 'ilorm',
+    });
+
     this.ilorm.use(ilormMongo);
-    this.fixtures = fixtures || starWarsFixtures;
+    this.fixtures = new Fixtures(this.MongoConnector.database, this.MongoConnector);
   }
 
   // eslint-disable-next-line require-jsdoc
@@ -25,7 +31,6 @@ class TestContext {
 
   // eslint-disable-next-line require-jsdoc
   initModel() {
-    const MongoConnector = ilormMongo.fromDb(this.database);
 
     // Declare schema :
     const schema = this.fixtures.schema(this.ilorm.Schema);
@@ -33,7 +38,7 @@ class TestContext {
     const modelConfig = {
       name: this.fixtures.modelName,
       schema,
-      connector: new MongoConnector({ collectionName: this.fixtures.collectionName, }),
+      connector: new this.MongoConnector({ sourceName: this.fixtures.collectionName, }),
     };
 
     this.Model = this.ilorm.newModel(modelConfig);
@@ -41,20 +46,18 @@ class TestContext {
 
   // eslint-disable-next-line
   async initDb() {
-    this.mongoClient = await MongoClient.connect(DB_URL, { useUnifiedTopology: true, });
-
-    this.database = await this.mongoClient.db('ilorm');
-
     this.initModel();
 
-    return this.fixtures.initDb(this.database);
+    return this.fixtures.initDb();
   }
 
   // eslint-disable-next-line
   async cleanDb() {
-    await this.fixtures.cleanDb(this.database);
+    await this.fixtures.cleanDb();
 
-    return this.mongoClient.close();
+    const mongoClient = await this.MongoConnector.mongoClient;
+
+    return mongoClient.close();
   }
 
 }

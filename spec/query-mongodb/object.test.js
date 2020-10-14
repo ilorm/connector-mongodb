@@ -18,17 +18,30 @@ const ELEM_2 = {
   },
 };
 
-const fixtures = {
-  modelName: 'object',
-  collectionName: 'object',
-  schema: (Schema) => new Schema({
-    objectConstraint: Schema.object({
-      testString: Schema.string(),
-      testNumber: Schema.number(),
-      // eslint-disable-next-line no-magic-numbers
-    }),
-  }),
-  initDb: async (database) => {
+// eslint-disable-next-line require-jsdoc
+class ObjectFixture {
+  // eslint-disable-next-line require-jsdoc
+  constructor(database, MongoConnector) {
+    this.database = database;
+    this.MongoConnector = MongoConnector;
+    this.collectionName = 'object';
+  }
+
+  // eslint-disable-next-line require-jsdoc
+  schema(Schema) {
+    return new Schema({
+      objectConstraint: Schema.object({
+        testString: Schema.string(),
+        testNumber: Schema.number(),
+        // eslint-disable-next-line no-magic-numbers
+      }),
+    });
+  }
+
+  // eslint-disable-next-line require-jsdoc
+  async initDb() {
+    const database = await this.database;
+
     await database.createCollection('object');
     await database.collection('object').insertMany([
       {
@@ -40,14 +53,23 @@ const fixtures = {
         ...ELEM_2,
       },
     ]);
-  },
-  cleanDb: (database) => database.dropCollection('object'),
-};
+  }
+  // eslint-disable-next-line require-jsdoc
+  async cleanDb() {
+    const database = await this.database;
 
-const testContext = new TestContext(fixtures);
+    return database.dropCollection('object');
+  }
+}
+
+let testContext = new TestContext(ObjectFixture);
 
 describe('query[objectField]', () => {
-  beforeEach(() => testContext.initDb());
+  beforeEach(() => {
+    testContext = new TestContext(ObjectFixture);
+
+    return testContext.initDb();
+  });
   afterEach(() => testContext.cleanDb());
 
   it('Should query model based on an object field', async () => {
@@ -135,17 +157,30 @@ describe('query[objectField]', () => {
   });
 
   describe('objectField including objectField', () => {
-    const fixturesobjectOfobject = {
-      modelName: 'objectOfObject',
-      collectionName: 'objectOfObject',
-      schema: (Schema) => new Schema({
-        objectConstraint: Schema.object({
-          subObject: Schema.object({
-            test: Schema.number(),
+    // eslint-disable-next-line require-jsdoc
+    class FixtureObjectOfObject {
+      // eslint-disable-next-line require-jsdoc
+      constructor(database, MongoConnector) {
+        this.database = database;
+        this.MongoConnector = MongoConnector;
+        this.collectionName = 'objectOfObject';
+      }
+
+      // eslint-disable-next-line require-jsdoc
+      schema(Schema) {
+        return new Schema({
+          objectConstraint: Schema.object({
+            subObject: Schema.object({
+              test: Schema.number(),
+            }),
           }),
-        }),
-      }),
-      initDb: async (database) => {
+        });
+      }
+
+      // eslint-disable-next-line require-jsdoc
+      async initDb() {
+        const database = await this.database;
+
         await database.createCollection('objectOfObject');
         await database.collection('objectOfObject').insertMany([
           {
@@ -165,11 +200,16 @@ describe('query[objectField]', () => {
             },
           },
         ]);
-      },
-      cleanDb: (database) => database.dropCollection('objectOfObject'),
-    };
+      }
+      // eslint-disable-next-line require-jsdoc
+      async cleanDb() {
+        const database = await this.database;
 
-    const testContextobjectOfobject = new TestContext(fixturesobjectOfobject);
+        return database.dropCollection('objectOfObject');
+      }
+    }
+
+    const testContextobjectOfobject = new TestContext(FixtureObjectOfObject);
 
     beforeEach(() => testContextobjectOfobject.initDb());
     afterEach(() => testContextobjectOfobject.cleanDb());

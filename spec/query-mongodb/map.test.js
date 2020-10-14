@@ -26,17 +26,30 @@ const ELEM_2 = {
   },
 };
 
-const fixtures = {
-  modelName: 'map',
-  collectionName: 'map',
-  schema: (Schema) => new Schema({
-    mapConstraint: Schema.map(Schema.object({
-      testString: Schema.string(),
-      testNumber: Schema.number(),
+// eslint-disable-next-line require-jsdoc
+class MapFixture {
+  // eslint-disable-next-line require-jsdoc
+  constructor(database, MongoConnector) {
+    this.database = database;
+    this.MongoConnector = MongoConnector;
+    this.collectionName = 'map';
+  }
+
+  // eslint-disable-next-line require-jsdoc
+  schema(Schema) {
+    return new Schema({
+      mapConstraint: Schema.map(Schema.object({
+        testString: Schema.string(),
+        testNumber: Schema.number(),
       // eslint-disable-next-line no-magic-numbers
-    })).setKeyValidator((key) => key.length === 2),
-  }),
-  initDb: async (database) => {
+      })).setKeyValidator((key) => key.length === 2),
+    });
+  }
+
+  // eslint-disable-next-line require-jsdoc
+  async initDb() {
+    const database = await this.database;
+
     await database.createCollection('map');
     await database.collection('map').insertMany([
       {
@@ -48,14 +61,23 @@ const fixtures = {
         ...ELEM_2,
       },
     ]);
-  },
-  cleanDb: (database) => database.dropCollection('map'),
-};
+  }
+  // eslint-disable-next-line require-jsdoc
+  async cleanDb() {
+    const database = await this.database;
 
-const testContext = new TestContext(fixtures);
+    return database.dropCollection('map');
+  }
+}
+
+let testContext;
 
 describe('query[MapField]', () => {
-  beforeEach(() => testContext.initDb());
+  beforeEach(() => {
+    testContext = new TestContext(MapFixture);
+
+    return testContext.initDb();
+  });
   afterEach(() => testContext.cleanDb());
 
   it('Should query model based on an map field', async () => {
@@ -163,13 +185,26 @@ describe('query[MapField]', () => {
   });
 
   describe('MapField including MapField', () => {
-    const fixturesMapOfMap = {
-      modelName: 'mapOfMap',
-      collectionName: 'mapOfMap',
-      schema: (Schema) => new Schema({
-        mapConstraint: Schema.map(Schema.map(Schema.number())),
-      }),
-      initDb: async (database) => {
+    // eslint-disable-next-line require-jsdoc
+    class MapOfMapFixture {
+      // eslint-disable-next-line require-jsdoc
+      constructor(database, MongoConnector) {
+        this.database = database;
+        this.MongoConnector = MongoConnector;
+        this.collectionName = 'mapOfMap';
+      }
+
+      // eslint-disable-next-line require-jsdoc
+      schema(Schema) {
+        return new Schema({
+          mapConstraint: Schema.map(Schema.map(Schema.number())),
+        });
+      }
+
+      // eslint-disable-next-line require-jsdoc
+      async initDb() {
+        const database = await this.database;
+
         await database.createCollection('mapOfMap');
         await database.collection('mapOfMap').insertMany([
           {
@@ -190,11 +225,16 @@ describe('query[MapField]', () => {
             },
           },
         ]);
-      },
-      cleanDb: (database) => database.dropCollection('mapOfMap'),
-    };
+      }
+      // eslint-disable-next-line require-jsdoc
+      async cleanDb() {
+        const database = await this.database;
 
-    const testContextMapOfMap = new TestContext(fixturesMapOfMap);
+        return database.dropCollection('mapOfMap');
+      }
+    }
+
+    const testContextMapOfMap = new TestContext(MapOfMapFixture);
 
     beforeEach(() => testContextMapOfMap.initDb());
     afterEach(() => testContextMapOfMap.cleanDb());

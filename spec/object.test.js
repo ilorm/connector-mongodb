@@ -16,7 +16,7 @@ async function initModel(schemaDefinition) {
   const modelConfig = {
     name: 'ModelObject',
     schema,
-    connector: new MongoConnector({ collectionName: 'modelObject', }),
+    connector: new MongoConnector({ sourceName: 'modelObject', }),
   };
 
   return newModel(modelConfig);
