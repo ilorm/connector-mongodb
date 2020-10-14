@@ -1,5 +1,3 @@
-const { MongoClient, } = require('mongodb');
-
 const StarWarsFixtures = require('./starWars.fixture');
 
 const Ilorm = require('ilorm').constructor;

@@ -6,7 +6,7 @@ const ilormMongo = require('../../index');
 const { expect, } = require('chai');
 
 const ELEM_1 = {
-  arrayConstraint:[
+  arrayConstraint: [
     {
       testString: 'notString',
     },
