@@ -20,7 +20,7 @@
     "mongodb"
   ],
   "dependencies": {
-    "mongodb": "^3.5.7"
+    "mongodb": "^4.0.1"
   },
   "peerDependencies": {
     "ilorm": "0.x"
